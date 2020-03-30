@@ -17,6 +17,17 @@ label2='ABV'
 githublink='https://github.com/austinlasseter/flying-dog-beers'
 sourceurl='https://www.flyingdog.com/beers/'
 
+
+import pandas as pd
+df = pd.read_csv('gapminderDataFiveYear.csv')
+
+import plotly.express as px
+
+df = df[df['continent'] == 'Asia']  # 提取亚洲数据
+fig = px.line(df,   # 指定数据的名字
+             x='year',  # 年份为横坐标
+             y='lifeExp',  # 预期寿命为纵坐标 
+             color='country') # 以国家进行染色
 ########### Set up the chart
 bitterness = go.Bar(
     x=beers,
@@ -56,7 +67,9 @@ app.layout = html.Div(children=[
     html.A('Code on Github', href=githublink),
     html.Br(),
     html.A('Data Source', href=sourceurl),
+    dcc.Graph(figure=fig),
     ]
+
 )
 
 if __name__ == '__main__':
