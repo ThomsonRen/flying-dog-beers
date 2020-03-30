@@ -5,8 +5,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import pandas as pd
 import plotly.express as px
-df = px.data.gapminder()
-
+# df = px.data.gapminder()
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 
@@ -14,11 +13,11 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 
 
-df = df[df['continent'] == 'Asia']  # 提取亚洲数据
-fig = px.line(df,   # 指定数据的名字
-             x='year',  # 年份为横坐标
-             y='lifeExp',  # 预期寿命为纵坐标 
-             color='country') # 以国家进行染色
+# df = df[df['continent'] == 'Asia']  # 提取亚洲数据
+# fig = px.line(df,   # 指定数据的名字
+#              x='year',  # 年份为横坐标
+#              y='lifeExp',  # 预期寿命为纵坐标 
+#              color='country') # 以国家进行染色
 
 
 
@@ -28,7 +27,7 @@ app.layout = html.Div([
     dcc.Input(id='my-id', value='initial value', type='text'),
     html.Div(id='my-div'),
     dcc.Graph(id='graph-with-slider'),
-    dcc.Graph(figure=fig),
+    # dcc.Graph(figure=fig),
     
     dcc.Slider(
         id='year-slider',  # 指定变量的名字
