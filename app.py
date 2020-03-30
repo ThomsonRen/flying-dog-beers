@@ -4,14 +4,15 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 import pandas as pd
-df = pd.read_csv('gapminderDataFiveYear.csv')
+import plotly.express as px
+df = px.data.gapminder()
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 
 
 
-import plotly.express as px
+
 
 df = df[df['continent'] == 'Asia']  # 提取亚洲数据
 fig = px.line(df,   # 指定数据的名字
@@ -92,4 +93,4 @@ def update_figure(selected_year):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True,port=1099)
+    app.run_server()
