@@ -1,63 +1,95 @@
+# -*- coding: utf-8 -*-
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import plotly.graph_objs as go
+from dash.dependencies import Input, Output
+import pandas as pd
+df = pd.read_csv('gapminderDataFiveYear.csv')
 
-########### Define your variables
-beers=['Chesapeake Stout', 'Snake Dog IPA', 'Imperial Porter', 'Double Dog IPA']
-ibu_values=[35, 60, 85, 75]
-abv_values=[5.4, 7.1, 9.2, 14.3]
-color1='lightblue'
-color2='darkgreen'
-mytitle='Beer Comparison'
-tabtitle='beer!'
-myheading='Flying Dog Beers'
-label1='IBU'
-label2='ABV'
-githublink='https://github.com/austinlasseter/flying-dog-beers'
-sourceurl='https://www.flyingdog.com/beers/'
-
-########### Set up the chart
-bitterness = go.Bar(
-    x=beers,
-    y=ibu_values,
-    name=label1,
-    marker={'color':color1}
-)
-alcohol = go.Bar(
-    x=beers,
-    y=abv_values,
-    name=label2,
-    marker={'color':color2}
-)
-
-beer_data = [bitterness, alcohol]
-beer_layout = go.Layout(
-    barmode='group',
-    title = mytitle
-)
-
-beer_fig = go.Figure(data=beer_data, layout=beer_layout)
-
-
-########### Initiate the app
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-server = app.server
-app.title=tabtitle
 
-########### Set up the layout
-app.layout = html.Div(children=[
-    html.H1(myheading),
-    dcc.Graph(
-        id='flyingdog',
-        figure=beer_fig
+
+
+
+import plotly.express as px
+
+df = df[df['continent'] == 'Asia']  # 提取亚洲数据
+fig = px.line(df,   # 指定数据的名字
+             x='year',  # 年份为横坐标
+             y='lifeExp',  # 预期寿命为纵坐标 
+             color='country') # 以国家进行染色
+
+
+
+
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app.layout = html.Div([
+    dcc.Input(id='my-id', value='initial value', type='text'),
+    html.Div(id='my-div'),
+    dcc.Graph(id='graph-with-slider'),
+    dcc.Graph(figure=fig),
+    
+    dcc.Slider(
+        id='year-slider',  # 指定变量的名字
+        min=df['year'].min(), # 最小值
+        max=df['year'].max(),  # 最大值
+        value=df['year'].min(), # 初始值
+        marks={str(year): str(year) for year in df['year'].unique()},
+        step=None
     ),
-    html.A('Code on Github', href=githublink),
-    html.Br(),
-    html.A('Data Source', href=sourceurl),
-    ]
+])
+
+
+
+
+
+
+@app.callback(
+    Output(component_id='my-div', component_property='children'),
+    [Input(component_id='my-id', component_property='value')]
 )
+def update_output_div(input_value):
+    return 'You\'ve entered "{}"'.format(input_value)
+
+
+@app.callback(
+    Output('graph-with-slider', 'figure'),
+    [Input('year-slider', 'value')])
+
+# 函数的输入值为slider的一个属性，函数的输出值为一张图片（的字典）
+def update_figure(selected_year):
+    filtered_df = df[df.year == selected_year]
+    traces = []
+    for i in filtered_df.continent.unique():
+        df_by_continent = filtered_df[filtered_df['continent'] == i]
+        traces.append(dict(
+            x=df_by_continent['gdpPercap'],
+            y=df_by_continent['lifeExp'],
+            text=df_by_continent['country'],
+            mode='markers',
+            opacity=0.7,
+            marker={
+                'size': 15,
+                'line': {'width': 0.5, 'color': 'white'}
+            },
+            name=i
+        ))
+
+    return {
+        'data': traces,
+        'layout': dict(
+            xaxis={'type': 'log', 'title': 'GDP Per Capita',
+                   'range':[2.3, 4.8]},
+            yaxis={'title': 'Life Expectancy', 'range': [20, 90]},
+            margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
+            legend={'x': 0, 'y': 1},
+            hovermode='closest',
+            transition = {'duration': 1500},
+        )
+    }
+
+
+
 
 if __name__ == '__main__':
-    app.run_server()
+    app.run_server(debug=True,port=1099)
