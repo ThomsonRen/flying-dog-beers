@@ -2,7 +2,6 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
-import numpy as np
 import pandas as pd
 import plotly.express as px
 from plotly.subplots import make_subplots
@@ -14,6 +13,13 @@ px.set_mapbox_access_token('pk.eyJ1IjoidG9uZ3hpbnJlbiIsImEiOiJjazZnM2phcXEwdTJ5M
 
 data = pd.read_csv("https://raw.githubusercontent.com/ThomsonRen/flying-dog-beers/master/data/MCM-Data-2020-03-19.csv")
 loc = pd.read_csv('https://raw.githubusercontent.com/ThomsonRen/flying-dog-beers/master/data/Loc.csv')
+
+
+
+#data = pd.read_csv("data/MCM-Data-2020-03-19.csv")
+#loc = pd.read_csv('data/Loc.csv')
+
+
 Geo_Dict = {loc['Institution'][i]:(loc['lat'][i],loc['lng'][i]) for i in range(len(loc)) }
 data2 = data.groupby('Institution').count().reset_index()
 lat = []
@@ -67,7 +73,7 @@ for prize in PrizeList:
 #     else:
 #         fig.add_trace(go.Bar(x=x, y=Problem_Time_History[problem], name=label))
 
-fig_problem_desi.update_layout(width=1000,height = 500,barmode='stack', xaxis={'categoryorder':'category ascending'},legend_orientation="h")
+fig_problem_desi.update_layout(barmode='stack', xaxis={'categoryorder':'category ascending'},legend_orientation="h")
 
 fig_problem_desi.update_layout(
     updatemenus=[
@@ -123,8 +129,8 @@ fig_geo = px.density_mapbox(data2,
                         lon="lng",
                         #size = 'ID',
                         #color = 'ID',
-                        height = 600,
-                        width = 1000,
+#                        height = 600,
+#                        width = 1000,
                         radius=7,
                         hover_data=['Institution','ID'],
                         labels={'ID':'数量'},
@@ -138,8 +144,8 @@ fig_geo = px.density_mapbox(data2,
 fig_geo2 = px.scatter_mapbox(data2, lat="lat", 
                         lon="lng",
                         size = 'ID',color = 'ID',
-                        height = 600,
-                        width = 1000,
+#                        height = 600,
+#                        width = 1000,
                         #color_continuous_scale = 'Oranges',
                         center = go.layout.mapbox.Center(lat=33.5,lon=175),
                         zoom = 1,
@@ -179,12 +185,71 @@ app.title=tabtitle
 
 ########### Set up the layout
 app.layout = html.Div(children=[
-    html.H1(myheading),
+    #html.H1(myheading,style={"margin-left": "300px","margin-top": "50px"}),
 
-    dcc.Markdown(children=introduction),
+
+    html.Div(
+    [
+     html.Div(
+                [
+                    html.Div(
+                        [
+                            html.H3(
+                                "New York Oil and Gas",
+                                style={"margin-bottom": "auto"},
+                            ),
+                            html.H5(
+                                "Production Overview", style={"margin-top": "auto"}
+                            ),
+                        ]
+                    )
+                ],
+            className="one-half column",
+            style={"margin-top": "auto","margin-left": "auto"},
+            id="title",
+            ),
+
+             
+
+
+    ],
+    id="header",
+    className="row flex-display",
+    style={"margin-top": "50px","margin-left": "50px"},
+    ),
+
     
-    dcc.Graph(id = 'fig_geo',figure = fig_geo),
-    dcc.Graph(id = 'fig_geo2',figure = fig_geo2),
+    html.Div(
+    [
+     html.Div(
+     dcc.Graph(id = 'fig_geo3',figure = fig_geo,style={"margin-right": "50px","margin-left": "50px"},),
+    className="one-half column",
+    
+    ),
+             
+     html.Div(       
+    dcc.Graph(id = 'fig_geo4',figure = fig_geo2,style={"margin-right": "50px","margin-left": "50px"},),
+    className="one-half column",
+    ),
+    
+    ],
+     id="header2",
+   className="row flex-display",               
+            
+            
+            ),
+    
+    
+
+
+
+
+
+    
+    dcc.Markdown(children=introduction,style={"margin-top": "50px","margin-left": "50px"},),
+    
+    dcc.Graph(id = 'fig_geo',figure = fig_geo,style={"margin-right": "50px","margin-left": "50px"},),
+    dcc.Graph(id = 'fig_geo2',figure = fig_geo2,style={"margin-right": "50px","margin-left": "50px"},),
 
     dcc.Graph(id='fig_total_number',
         figure=fig_total_number),
