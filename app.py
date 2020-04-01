@@ -10,8 +10,10 @@ from plotly.subplots import make_subplots
 px.set_mapbox_access_token('pk.eyJ1IjoidG9uZ3hpbnJlbiIsImEiOiJjazZnM2phcXEwdTJ5M2pxcHQ3MDRteHNlIn0.ci2XKyZQRC_tAEcvxVIeAQ')
 
 ## loading data
-data = pd.read_csv('data/MCM-Data-2020-03-19.csv')
-loc = pd.read_csv('data/loc.csv')
+
+
+data = pd.read_csv("https://raw.githubusercontent.com/ThomsonRen/flying-dog-beers/master/data/MCM-Data-2020-03-19.csv")
+loc = pd.read_csv('https://raw.githubusercontent.com/ThomsonRen/flying-dog-beers/master/data/Loc.csv')
 Geo_Dict = {loc['Institution'][i]:(loc['lat'][i],loc['lng'][i]) for i in range(len(loc)) }
 data2 = data.groupby('Institution').count().reset_index()
 lat = []
