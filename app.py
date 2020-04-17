@@ -11,13 +11,13 @@ px.set_mapbox_access_token('pk.eyJ1IjoidG9uZ3hpbnJlbiIsImEiOiJjazZnM2phcXEwdTJ5M
 ## loading data
 
 
-data = pd.read_csv("https://raw.githubusercontent.com/ThomsonRen/flying-dog-beers/master/data/MCM-Data-2020-03-19.csv")
-loc = pd.read_csv('https://raw.githubusercontent.com/ThomsonRen/flying-dog-beers/master/data/Loc.csv')
+#data = pd.read_csv("https://raw.githubusercontent.com/ThomsonRen/flying-dog-beers/master/data/MCM-Data-2020-03-19.csv")
+#loc = pd.read_csv('https://raw.githubusercontent.com/ThomsonRen/flying-dog-beers/master/data/Loc.csv')
 
 
 
-#data = pd.read_csv("data/MCM-Data-2020-03-19.csv")
-#loc = pd.read_csv('data/Loc.csv')
+data = pd.read_csv("data/MCM-Data-2020-03-19.csv")
+loc = pd.read_csv('data/Loc.csv')
 
 
 Geo_Dict = {loc['Institution'][i]:(loc['lat'][i],loc['lng'][i]) for i in range(len(loc)) }
@@ -29,6 +29,25 @@ for i in range(len(data2)):
     lng.append(Geo_Dict[data2['Institution'][i]][1])
 data2['lat'] = lat
 data2['lng'] = lng
+
+
+
+## 项目介绍
+
+introtext = '''
+美国大学生数学建模竞赛（MCM/ICM）是唯一的国际性数学建模竞赛，
+也是世界范围内最具影响力的数学建模竞赛，
+主办方是COMAP（the Consortium for Mathematics and Its Application，
+美国数学及其应用联合会）。
+赛题内容涉及经济、管理、环境、资源、生态、医学、安全、等众多领域。
+竞赛要求三人（本科生）为一组，
+在四天时间内，就指定的问题完成从建立模型、求解、验证到论文撰写的全部工作，
+体现了参赛选手研究问题、解决方案的能力及团队合作精神，
+为现今各类[数学建模竞赛](https://baike.baidu.com/item/数学建模竞赛)之鼻祖。
+
+'''
+
+
 
 
 
@@ -129,7 +148,7 @@ fig_geo = px.density_mapbox(data2,
                         lon="lng",
                         #size = 'ID',
                         #color = 'ID',
-#                        height = 600,
+                        height = 600,
 #                        width = 1000,
                         radius=7,
                         hover_data=['Institution','ID'],
@@ -148,7 +167,7 @@ fig_geo2 = px.scatter_mapbox(data2, lat="lat",
 #                        width = 1000,
                         #color_continuous_scale = 'Oranges',
                         center = go.layout.mapbox.Center(lat=33.5,lon=175),
-                        zoom = 1,
+                        zoom = 0,
                         hover_name = 'Institution',size_max  =20)
 
 
@@ -186,8 +205,6 @@ app.title=tabtitle
 ########### Set up the layout
 app.layout = html.Div(children=[
     #html.H1(myheading,style={"margin-left": "300px","margin-top": "50px"}),
-
-
     html.Div(
     [
      html.Div(
@@ -195,75 +212,88 @@ app.layout = html.Div(children=[
                     html.Div(
                         [
                             html.H3(
-                                "New York Oil and Gas",
-                                style={"margin-bottom": "auto"},
-                            ),
-                            html.H5(
-                                "Production Overview", style={"margin-top": "auto"}
+                                "美国大学生数学建模竞赛（MCM/ICM）获奖数据可视化",
                             ),
                         ]
                     )
                 ],
-            className="one-half column",
-            style={"margin-top": "auto","margin-left": "auto"},
+           
             id="title",
+            className="nine columns named-card",
             ),
-
-             
-
-
+                        
+                        
+        
+        html.Div(
+                    [
+                        html.Img(
+                            src=app.get_asset_url("dash-logo.png"),
+                            id="plotly-image",
+                            style={
+                                "height": "60px",
+                                "width": "auto",
+                                "margin-bottom": "25px",
+                            },
+                        )
+                    ],
+                    className="three columns named-card",
+        
+                ),                    
+                        
+                        
     ],
     id="header",
-    className="row flex-display",
-    style={"margin-top": "50px","margin-left": "50px"},
+    className="twelve columns",
+    style={"margin-top": "20px","margin-left": "50px","margin-bottom": "0px",},
     ),
 
+    html.Div(
+     html.P(
+        introtext,
+      style={"margin-top": "20px","margin-left": "50px","margin-bottom": "0px",},  
+        ),
+     className="twelve columns",
+     
+     ),
+    
+    
     
     html.Div(
-    [
-     html.Div(
-     dcc.Graph(id = 'fig_geo3',figure = fig_geo,style={"margin-right": "50px","margin-left": "50px"},),
-    className="one-half column",
-    
-    ),
-             
-     html.Div(       
-    dcc.Graph(id = 'fig_geo4',figure = fig_geo2,style={"margin-right": "50px","margin-left": "50px"},),
+    [      
+    html.Div(       
+    dcc.Graph(id = 'fig_geo4',figure = fig_geo2,),
     className="one-half column",
     ),
     
-    ],
-     id="header2",
-   className="row flex-display",               
+          
             
-            
-            ),
-    
-    
-
-
-
-
-
-    
-    dcc.Markdown(children=introduction,style={"margin-top": "50px","margin-left": "50px"},),
-    
-    dcc.Graph(id = 'fig_geo',figure = fig_geo,style={"margin-right": "50px","margin-left": "50px"},),
-    dcc.Graph(id = 'fig_geo2',figure = fig_geo2,style={"margin-right": "50px","margin-left": "50px"},),
-
-    dcc.Graph(id='fig_total_number',
-        figure=fig_total_number),
-              
-    dcc.Graph(id='fig_problem_desi',
-        figure=fig_problem_desi), 
+    html.Div(       
+    [dcc.Graph(id='fig_problem_desi',
+        figure=fig_problem_desi),
     dcc.Graph(id='fig_country',
-        figure=fig_country),          
-              
-              
+        figure=fig_country),   
+        ],
+    className="one-half column",
+    ), 
+                        
+                        
+               
+                        
+    ]  ,   
+     id="header2",
+     className="row flex-display",           
+     ),
+               
+        
+               
+#    dcc.Graph(id='fig_problem_desi',
+#        figure=fig_problem_desi), 
+#    dcc.Graph(id='fig_country',
+#        figure=fig_country),          
+#                
     # html.A('Code on Github', href=githublink),
-    html.Br(),
     # html.A('Data Source', href=sourceurl),
-    ]
+    ],style={"margin-top": "0px","margin-left": "0px"},
 
 )
 
